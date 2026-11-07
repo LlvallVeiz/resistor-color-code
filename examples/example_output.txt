@@ -1,0 +1,65 @@
+$ python3 tests/test_resistor.py
+All tests passed.
+
+$ python3 resistor.py decode yellow violet red gold
+Bands        : yellow violet red gold (4-band)
+Resistance   : 4.7 kΩ (4700 Ω)
+Tolerance    : ±5%
+Range        : 4.46 kΩ … 4.93 kΩ
+
+$ python3 resistor.py decode orange orange black black brown red
+Bands        : orange orange black black brown red (6-band)
+Resistance   : 330 Ω (330 Ω)
+Tolerance    : ±1%
+Range        : 327 Ω … 333 Ω
+Temp coeff   : 50 ppm/K
+
+$ python3 resistor.py encode 10000 --series exact
+Requested    : 10 kΩ (10000 Ω)
+Bands        : brown black orange gold (4-band)
+Exact value  : 10 kΩ — the colours give exactly the target
+Check (decode): 10 kΩ ±5%
+
+$ python3 resistor.py encode 4701
+Requested    : 4.7 kΩ (4701 Ω)
+E24 target   : 4.7 kΩ (4700 Ω) (nearest preferred value)
+Bands        : yellow violet red gold (4-band)
+Exact value  : 4.7 kΩ — the colours give exactly the target
+Check (decode): 4.7 kΩ ±5%
+
+$ python3 resistor.py encode 4750 --bands 5 --tolerance brown --series E96
+Requested    : 4.75 kΩ (4750 Ω)
+E96 target   : 4.75 kΩ (4750 Ω) (already a preferred value)
+Bands        : yellow violet green brown brown (5-band)
+Exact value  : 4.75 kΩ — the colours give exactly the target
+Check (decode): 4.75 kΩ ±1%
+
+$ python3 resistor.py encode 4750 --bands 4 --series E96
+Requested    : 4.75 kΩ (4750 Ω)
+E96 target   : 4.75 kΩ (4750 Ω) (already a preferred value)
+Bands        : yellow gray red gold (4-band)
+Exact value  : 4.8 kΩ (4800 Ω) — closest the bands can express, off the target by +1.05%
+Check (decode): 4.8 kΩ ±5%
+
+$ python3 resistor.py table
+IEC 60062 colour chart
+Colour   Digit Multiplier  Tolerance Tempco (ppm/K)
+---------------------------------------------------
+black        0      ×10^0          —            250
+brown        1      ×10^1        ±1%            100
+red          2      ×10^2        ±2%             50
+orange       3      ×10^3        ±3%             15
+yellow       4      ×10^4        ±4%             25
+green        5      ×10^5      ±0.5%             20
+blue         6      ×10^6     ±0.25%             10
+violet       7      ×10^7      ±0.1%              5
+gray         8      ×10^8     ±0.05%              1
+white        9      ×10^9          —              —
+gold         —     ×10^-1        ±5%              —
+silver       —     ×10^-2       ±10%              —
+pink         —     ×10^-3          —              —
+No tolerance band at all means ±20%. Tempco is the 6th band, where fitted.
+
+$ python3 resistor.py decode black black red gold  (invalid: leading black)
+error: the first digit band cannot be black (a resistor value never starts with 0) — the bands may be in the wrong order
+exit code: 2
